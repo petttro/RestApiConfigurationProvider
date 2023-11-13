@@ -18,17 +18,17 @@ public static class ConfigurationBuilderExtensions
     /// <param name="configurationBuilder">The <see cref="IConfigurationBuilder"/> to which the configuration source is added.</param>
     /// <param name="loggerFactory">Used for logging during the configuration retrieval process.</param>
     /// <param name="distributedCache">A distributed cache for temporarily storing fetched configuration.</param>
-    /// <param name="restApiHttpClient">An HTTP client for interacting with the configuration rest api service.</param>
+    /// <param name="configurationRestApiClient">An HTTP client for interacting with the configuration rest api service.</param>
     /// <param name="restApiConfigurationProviderSettings">Settings required by the rest api configuration provider.</param>
     /// <returns>The updated <see cref="IConfigurationBuilder"/> with the rest api configuration source added.</returns>
     public static IConfigurationBuilder AddRestApiConfigurationSource(
         this IConfigurationBuilder configurationBuilder,
         ILoggerFactory loggerFactory,
         IDistributedCache distributedCache,
-        IRestApiHttpClient restApiHttpClient,
+        IConfigurationRestApiClient configurationRestApiClient,
         RestApiConfigurationProviderSettings restApiConfigurationProviderSettings)
     {
-        var source = new RestApiConfigurationSource(loggerFactory, distributedCache, restApiHttpClient, restApiConfigurationProviderSettings);
+        var source = new RestApiConfigurationSource(loggerFactory, distributedCache, configurationRestApiClient, restApiConfigurationProviderSettings);
         configurationBuilder.Add(source);
 
         return configurationBuilder;
