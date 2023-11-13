@@ -2,9 +2,6 @@ using System.Net;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using NLog;
-using NLog.Extensions.Logging;
-using NLog.Web;
 using RestApiConfigurationProvider.ConfigurationProviders;
 using RestApiConfigurationProvider.Extensions;
 using RestApiConfigurationProvider.HttpClients;
@@ -20,7 +17,6 @@ public class Program
     {
         var preliminaryConfig = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
             .AddJsonFile("appsettings.package.json")
             .AddEnvironmentVariables()
             .Build();
@@ -49,19 +45,13 @@ public class Program
             })
             .ConfigureAppConfiguration((context, builder) =>
             {
-                var restApiHttpClient = appStartServiceProvider.GetRequiredService<IRestApiHttpClient>();
+                var configurationRestApiClient = appStartServiceProvider.GetRequiredService<IConfigurationRestApiClient>();
                 var configurationProviderSettings = preliminaryConfig.GetSection(RestApiConfigurationProviderSettings.SectionName)
                     .Get<RestApiConfigurationProviderSettings>();
 
-                builder.AddRestApiConfigurationSource(loggerFactory, distributedCache, restApiHttpClient, configurationProviderSettings);
+                builder.AddRestApiConfigurationSource(loggerFactory, distributedCache, configurationRestApiClient, configurationProviderSettings);
             })
             .UseStartup<Startup>()
-            .ConfigureLogging((context, builder) =>
-            {
-                builder.SetMinimumLevel(LogLevel.Trace);
-                LogManager.Configuration = new NLogLoggingConfiguration(context.Configuration.GetSection("NLog"));
-            })
-            .UseNLog()
             .Build();
 
         host.Run();
@@ -70,8 +60,14 @@ public class Program
 
     private static ILoggerFactory GetFactory()
     {
-        var factory = new LoggerFactory();
-        factory.AddNLog();
-        return factory;
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+                .AddFilter("Microsoft", LogLevel.Warning)
+                .AddFilter("System", LogLevel.Warning)
+                .AddConsole();
+        });
+
+        return loggerFactory;
     }
 }

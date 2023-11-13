@@ -17,7 +17,7 @@ public class ConfigurationBuilderExtensionsTests
         // Arrange
         var configurationBuilder = new ConfigurationBuilder();
         var distributedCacheMock = new Mock<IDistributedCache>();
-        var restApiHttpClientMock = new Mock<IRestApiHttpClient>();
+        var configurationRestApiClientMock = new Mock<IConfigurationRestApiClient>();
         var restApiConfigurationProviderSettings = new RestApiConfigurationProviderSettings
         {
             ConfigurationKeys = new List<string> { "key1", "key2", "key3" },
@@ -29,7 +29,7 @@ public class ConfigurationBuilderExtensionsTests
         var result = configurationBuilder.AddRestApiConfigurationSource(
             new NullLoggerFactory(),
             distributedCacheMock.Object,
-            restApiHttpClientMock.Object,
+            configurationRestApiClientMock.Object,
             restApiConfigurationProviderSettings
         );
 

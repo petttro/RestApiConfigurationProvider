@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using RestApiConfigurationProvider.ConfigurationProviders;
-using RestApiConfigurationProvider.HttpClients;
 using Xunit;
 
 namespace RestApiConfigurationProvider.Test.ConfigurationProvider;
@@ -14,12 +13,12 @@ public class RestApiConfigurationSourceTests : MockStrictBehaviorTest
     public RestApiConfigurationSourceTests()
     {
         var distributedCacheMock = _mockRepository.Create<IDistributedCache>();
-        var restApiHttpClient = _mockRepository.Create<IRestApiHttpClient>();
+        var configurationRestApiClient = _mockRepository.Create<IConfigurationRestApiClient>();
 
         _configurationSource = new RestApiConfigurationSource(
             new NullLoggerFactory(),
             distributedCacheMock.Object,
-            restApiHttpClient.Object,
+            configurationRestApiClient.Object,
             new RestApiConfigurationProviderSettings());
     }
 
